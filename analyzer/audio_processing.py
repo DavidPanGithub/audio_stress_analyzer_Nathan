@@ -12,7 +12,6 @@ warnings.filterwarnings('ignore')
 
 class AudioStressScorer:
     def __init__(self):
-        # Psychoacoustic feature weights
         self.feature_weights = np.array([
             0.15,  # rms_variation
             0.15,  # tempo  
@@ -30,11 +29,9 @@ class AudioStressScorer:
             'harmonic_ratio', 'zero_crossing', 'dissonance'
         ]
         
-        # Initialize scaler as None first
         self.scaler = None
         self._is_fitted = False
         
-        # Load or initialize the scaler
         self._load_or_initialize_scaler()
 
     def _load_or_initialize_scaler(self):
@@ -50,23 +47,21 @@ class AudioStressScorer:
             except Exception as e:
                 print(f"Error loading scaler: {e}. Initializing with defaults.")
         
-        # If we get here, either file doesn't exist or loading failed
         print("No fitted_scaler.save found or loading failed. Initializing with defaults.")
         self._initialize_with_defaults()
 
     def _initialize_with_defaults(self):
         """Initialize scaler with reasonable defaults"""
-        self.scaler = RobustScaler()  # Create new scaler here
+        self.scaler = RobustScaler()
         
         dummy_features = np.array([
-            [0.1, 120, 1000, 0.5, 10, 0.5, 0.8, 0.1, 0.1],  # Low stress example
-            [0.3, 140, 2000, 0.3, 20, 1.0, 0.6, 0.2, 0.3],  # Medium stress example
-            [0.5, 160, 3000, 0.1, 30, 1.5, 0.4, 0.3, 0.5]   # High stress example
+            [0.1, 120, 1000, 0.5, 10, 0.5, 0.8, 0.1, 0.1],
+            [0.3, 140, 2000, 0.3, 20, 1.0, 0.6, 0.2, 0.3],
+            [0.5, 160, 3000, 0.1, 30, 1.5, 0.4, 0.3, 0.5]
         ])
         self.scaler.fit(dummy_features)
         self._is_fitted = True
         
-        # Save for future use
         scaler_path = os.path.join(os.path.dirname(__file__), 'fitted_scaler.save')
         try:
             joblib.dump(self.scaler, scaler_path)
@@ -98,7 +93,6 @@ class AudioStressScorer:
             zero_crossing = librosa.feature.zero_crossing_rate(y)[0]
             zero_crossing_mean = np.mean(zero_crossing)
             
-            # Dissonance calculation with safety checks
             dissonance = self._calculate_dissonance(y, sr)
             
             return np.array([
