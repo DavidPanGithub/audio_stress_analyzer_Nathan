@@ -45,10 +45,6 @@ wheels/
 logs/
 *.log
 
-# Database
-*.sqlite3
-*.db
-
 # Coverage reports
 .coverage
 htmlcov/
